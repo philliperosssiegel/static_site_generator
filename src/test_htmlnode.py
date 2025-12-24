@@ -1,0 +1,40 @@
+import unittest
+
+from htmlnode import HTMLNode, LeafNode
+
+class TestTextNode(unittest.TestCase):
+    def test_repr(self):
+        node = HTMLNode("<p>")
+        self.assertEqual("HTMLNode(<p>, None, None, None)", repr(node))
+    
+    def test_to_html(self):
+        node = HTMLNode("<p>")
+        try:
+            html = node.to_html()
+        except Exception:
+            html = None
+        self.assertEqual(html, None)
+    
+    # def test_props_to_html(self):
+    #     props_dict = {
+    #         "href": "https://www.google.com",
+    #         "target": "_blank"
+    #         }
+    #     node = HTMLNode(None, None, None, props_dict)
+    #     print(node.props_to_html())
+    #     self.assertEqual(f"""{{\n\t"href": https://www.google.com",\n\t"target": _blank",\n}}""", node.props_to_html()) 
+
+    def test_leaf_to_html_p(self):
+        node = LeafNode("p", "Hello, world!")
+        self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
+    
+    def test_leaf_to_html_a(self):
+        node = LeafNode("a", "Hello, world!")
+        self.assertEqual(node.to_html(), "<a>Hello, world!</a>")
+
+    def test_leaf_to_html_a_with_props(self):
+        node = LeafNode("a", "Click Me!", {"href": "https://www.google.com", "target": "_blank", "rel": "noopener"})
+        self.assertEqual(node.to_html(), '<a href="https://www.google.com" target="_blank" rel="noopener">Click Me!</a>')
+
+if __name__ == "__main__":
+    unittest.main()
