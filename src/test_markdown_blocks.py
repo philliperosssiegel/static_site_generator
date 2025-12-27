@@ -63,7 +63,7 @@ asdvkmglkgmnd fm fdmf f kmm fmd fm fdsm ;fsdmf 121948 8 1848193148 38 1831
 #
 ### 
 """
-        self.assertEqual(block_to_block_type(mk), BlockType.HEADING)
+        self.assertEqual(block_to_block_type(mk), BlockType.PARAGRAPH)
     
     # def test_get_markdown_block_type__code(self):
     #     mk = """ ``` fdlmfk mdf m13r13prmrp2 mp1mr m ``` """
@@ -77,15 +77,15 @@ asdvkmglkgmnd fm fdmf f kmm fmd fm fdsm ;fsdmf 121948 8 1848193148 38 1831
         block = "> quote\n> more quote"
         self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
         block = "- list\n- items"
-        self.assertEqual(block_to_block_type(block), BlockType.UNORDERED_LIST)
+        self.assertEqual(block_to_block_type(block), BlockType.ULIST)
         block = "1. list\n2. items"
-        self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+        self.assertEqual(block_to_block_type(block), BlockType.OLIST)
         block = "paragraph"
         self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
 
     def test_order_list_block_checks(self):
         block = "1. one\n2. two\n3. three"
-        self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+        self.assertEqual(block_to_block_type(block), BlockType.OLIST)
         block = "2. one\n3. two"
         self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
         block = "1. one\n3. three"
