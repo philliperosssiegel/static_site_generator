@@ -58,7 +58,7 @@ def create_block_html_parent_node(block_text: str):
             #     inline_text += f"\n{line.lstrip('>').lstrip()}"
             lines = block_text.split("\n")
             stripped = [line.lstrip(">").lstrip() for line in lines]
-            inline_text = "\n".join(stripped)
+            inline_text = " ".join(stripped)
             # inline_text = block_text.lstrip(">").lstrip()
         parent_node = ParentNode(tag=parent_tag, children=text_to_children(inline_text))
     elif block_type == BlockType.CODE:
