@@ -1,8 +1,9 @@
 from enum import Enum
 from functools import reduce
 
-from htmlnode import HTMLNode
-from textnode import TextNode
+from htmlnode import ParentNode, LeafNode
+from textnode import TextNode, text_node_to_html_node
+from inline_markdown import text_to_textnodes
 
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
@@ -35,41 +36,58 @@ def markdown_to_html_node(markdown):
     for block in blocks:
         html_nodes.append(create_block_html_parent_node(block))    
         
-    return HTMLNode(tag="div", value=None, children=html_nodes)
+    return ParentNode(tag="div", children=html_nodes)
 
 def create_block_html_parent_node(block_text: str):
 
     block_type = block_to_block_type(block_text) 
 
-    match block_type:
-        case BlockType.PARAGRAPH:
-            tag = "p"
-            inline_text = block_text
-            # break
-        case BlockType.HEADING:
-            tag = "h"
+    if block_type in [BlockType.PARAGRAPH, BlockType.HEADING, BlockType.QUOTE]:
+        if block_type == BlockType.PARAGRAPH:
+            parent_tag = "p"
+            lines = block_text.split("\n")
+            stripped = [line.strip() for line in lines]
+            inline_text = " ".join(stripped)
+        elif block_type == BlockType.HEADING:
+            parent_tag = f"h{get_heading_type(block_text)}"
             inline_text = block_text.lstrip("#").lstrip(" ")
-            # break
-        case BlockType.CODE:
-            tag = "code"
-            inline_text = block_text
-            # break
-        case BlockType.QUOTE:
-            tag = "blockquote"
-            inline_text = block_text.lstrip("> ")
-            # break
-        case BlockType.OLIST:
-            tag = "ol"
-            inline_text = block_text.split(". ")[1]
-            # break
-        case BlockType.ULIST:
-            tag = "ul"
-            inline_text = block_text.lstrip("- ")
-            # break
-
-    children_nodes = text_to_children(inline_text)
-    
-    return HTMLNode(tag=tag, value=None, children=children_nodes) #missing handling of inner list components and heading level in nodes atm
+        else: #QUOTE
+            parent_tag = "blockquote"
+            # inline_text = ""
+            # for line in block_text.split("\n"):
+            #     inline_text += f"\n{line.lstrip('>').lstrip()}"
+            lines = block_text.split("\n")
+            stripped = [line.lstrip(">").lstrip() for line in lines]
+            inline_text = "\n".join(stripped)
+            # inline_text = block_text.lstrip(">").lstrip()
+        parent_node = ParentNode(tag=parent_tag, children=text_to_children(inline_text))
+    elif block_type == BlockType.CODE:
+        # inline_text = block_text.lstrip("`").rstrip("`")
+        # inline_text = ""
+        lines = block_text.split("\n")
+        # for line in block_text.split("\n"):
+        #     if line != "```":
+        #         # inline_text += f"\n{line}"
+        #         lines.append(line)
+        inline_text = "\n".join(lines[1:-1]) + "\n" #drop ``` first and last lines
+        parent_node = ParentNode(tag="pre", children=[LeafNode(tag="code", value=inline_text)])
+    elif block_type in [BlockType.OLIST, BlockType.ULIST]:
+        if block_type == BlockType.OLIST:
+            parent_tag = "ol"
+        else: #ULIST
+            parent_tag = "ul"
+        lines = block_text.split("\n")
+        parent_node = ParentNode(tag=parent_tag, children=[]) 
+        # ul_node = HTMLNode(tag="ul", children=[])
+        for line in lines:
+            if block_type == BlockType.OLIST:
+                line_text = line.split(".", 1)[1].lstrip()
+            else: #ULIST
+                line_text = line.lstrip("- ").lstrip()
+            inline_children = text_to_children(line_text)
+            parent_node.children.append(ParentNode(tag="li", children=inline_children))
+        
+    return parent_node
 
 def get_heading_type(text):
     return len(text) - len(text.lstrip("#"))

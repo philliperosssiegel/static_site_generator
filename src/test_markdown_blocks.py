@@ -95,13 +95,13 @@ asdvkmglkgmnd fm fdmf f kmm fmd fm fdsm ;fsdmf 121948 8 1848193148 38 1831
 
     def test_paragraphs(self):
         md = """
-    This is **bolded** paragraph
-    text in a p
-    tag here
+This is **bolded** paragraph
+text in a p
+tag here
 
-    This is another paragraph with _italic_ text and `code` here
+This is another paragraph with _italic_ text and `code` here
 
-    """
+"""
 
         node = markdown_to_html_node(md)
         html = node.to_html()
@@ -112,11 +112,11 @@ asdvkmglkgmnd fm fdmf f kmm fmd fm fdsm ;fsdmf 121948 8 1848193148 38 1831
 
     def test_codeblock(self):
         md = """
-    ```
-    This is text that _should_ remain
-    the **same** even with inline stuff
-    ```
-    """
+```
+This is text that _should_ remain
+the **same** even with inline stuff
+```
+"""
 
         node = markdown_to_html_node(md)
         html = node.to_html()
@@ -124,6 +124,5 @@ asdvkmglkgmnd fm fdmf f kmm fmd fm fdsm ;fsdmf 121948 8 1848193148 38 1831
             html,
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
-        
 if __name__ == "__main__":
     unittest.main()

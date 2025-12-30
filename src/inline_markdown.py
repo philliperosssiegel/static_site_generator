@@ -2,28 +2,14 @@ import re
 
 from textnode import TextType, TextNode
 
-def markdown_to_blocks(markdown: str):
-    markdown_blocks = []
-    for block in markdown.split("\n\n"): #presumed that all input markdown is "well-formed" --> double newline block separation
-        clean_block = block.strip()
-        if not (clean_block in ["", "\n"]):
-            markdown_blocks.append(clean_block)
-    
-    return markdown_blocks
-
 def text_to_textnodes(text):
-    nodes = [TextNode(text)]
-    delimiter_dict = {
-        TextType.BOLD: "**",
-        TextType.ITALIC: "_",
-        TextType.CODE: "`"
-    }
-    for text_type, delimiter in delimiter_dict.items():
-        nodes.extend(split_nodes_delimiter(text_type, delimiter))
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
     
-    nodes.extend(split_nodes_image(nodes))
-    nodes.extend(split_nodes_link(nodes))
-
     return nodes
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -35,7 +21,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
         split_text = node.text.split(delimiter)
 
-        if len(split_text) % 2 == 0:
+        if len(split_text) % 2 == 0 and len(split_text) > 1:
             raise ValueError(f"Invalid text, index-parity failure for delimiter={delimiter}")
 
         for i, text in enumerate(split_text):
