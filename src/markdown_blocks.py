@@ -2,7 +2,7 @@ from enum import Enum
 from functools import reduce
 
 from htmlnode import ParentNode, LeafNode
-from textnode import TextNode, text_node_to_html_node
+from textnode import TextNode, TextType, text_node_to_html_node
 from inline_markdown import text_to_textnodes
 
 class BlockType(Enum):
@@ -57,20 +57,31 @@ def create_block_html_parent_node(block_text: str):
             # for line in block_text.split("\n"):
             #     inline_text += f"\n{line.lstrip('>').lstrip()}"
             lines = block_text.split("\n")
+            for line in lines:
+                if not line.startswith(">"):
+                    raise ValueError("Invalid quote block")
             stripped = [line.lstrip(">").lstrip() for line in lines]
             inline_text = " ".join(stripped)
             # inline_text = block_text.lstrip(">").lstrip()
         parent_node = ParentNode(tag=parent_tag, children=text_to_children(inline_text))
     elif block_type == BlockType.CODE:
+        if not block_text.startswith("```") or not block_text.endswith("```"):
+            raise ValueError("Invalid code block")
         # inline_text = block_text.lstrip("`").rstrip("`")
         # inline_text = ""
-        lines = block_text.split("\n")
+
         # for line in block_text.split("\n"):
         #     if line != "```":
         #         # inline_text += f"\n{line}"
         #         lines.append(line)
-        inline_text = "\n".join(lines[1:-1]) + "\n" #drop ``` first and last lines
-        parent_node = ParentNode(tag="pre", children=[LeafNode(tag="code", value=inline_text)])
+
+        # lines = block_text.split("\n")
+        # inline_text = "\n".join(lines[1:-1]) + "\n" #drop ``` first and last lines
+
+        inline_text = block_text[4:-3]
+        raw_text_node = TextNode(inline_text, TextType.TEXT)
+        child_node = text_node_to_html_node(raw_text_node)
+        parent_node = ParentNode(tag="pre", children=[ParentNode(tag="code", children=[child_node])])
     elif block_type in [BlockType.OLIST, BlockType.ULIST]:
         if block_type == BlockType.OLIST:
             parent_tag = "ol"
@@ -90,7 +101,10 @@ def create_block_html_parent_node(block_text: str):
     return parent_node
 
 def get_heading_type(text):
-    return len(text) - len(text.lstrip("#"))
+    heading_level = len(text) - len(text.lstrip("#"))
+    if heading_level + 1 >= len(text):
+        raise ValueError(f"Invalid heading level: {heading_level}") 
+    return heading_level
 
 def text_to_children(text):
     text_nodes = text_to_textnodes(text)
