@@ -1,3 +1,5 @@
+import os
+
 from textnode import TextNode, TextType
 from generator import recursive_directory_copy
 
