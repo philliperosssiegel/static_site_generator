@@ -74,12 +74,12 @@ def recursive_directory_copy(source_dir: Path, destination_dir: Path):
         item = stack.pop(0)
         
         if os.path.isfile(os.path.abspath(item)):
-            item_source_dir = get_directory(os.path.abspath(item))
-            item_filename = get_filename(os.path.abspath(item))
+            item_source_dir = get_directory(item)
+            item_filename = get_filename(item)
             item_destination_dir = item_source_dir.replace(os.path.abspath(source_dir), os.path.abspath(destination_dir))
 
-            dest_item_path = prepare_destination_path(os.path.abspath(item_source_dir), os.path.abspath(item_destination_dir))
-            copy_file_if_not_exists(os.path.abspath(item_source_dir), item_filename, os.path.abspath(item_destination_dir))
+            dest_item_path = prepare_destination_path(item_source_dir, item_destination_dir)
+            copy_file_if_not_exists(item_source_dir, item_filename, item_destination_dir)
         else: #directory
             item_source_dir = get_directory(item)
             make_dir_if_not_exists(item_destination_dir)
