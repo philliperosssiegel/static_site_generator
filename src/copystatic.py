@@ -68,9 +68,11 @@ def prepare_destination_path(source_path: Path, destination_dir: Path):
     return destination_path
     
 def recursive_directory_copy(source_dir: Path, destination_dir: Path):
+    print(f"Recursively deleting directory... --> {destination_dir}")
     delete_directory_if_not_exists(os.path.abspath(destination_dir))
     make_dir_if_not_exists(os.path.abspath(destination_dir))
 
+    print(f"Copying static files to public directory...")
     stack = [os.path.abspath(os.path.join(os.path.abspath(source_dir), item)) for item in os.listdir(source_dir)]
 
     while len(stack) > 0:
