@@ -1,4 +1,5 @@
 from markdown_blocks import markdown_to_html_node, extract_title
+from copystatic import make_dir_if_not_exists
 
 def read_file(file_path: str) -> str:
     with open(file_path, 'r') as f:
@@ -19,4 +20,5 @@ def generate_page(from_path: str, dest_path: str, template_path: str):
 
     prepped_html = template_file.replace("{{ Title }}", title).replace("{{ Content }}", source_file_html)
 
+    make_dir_if_not_exists(dest_path)
     write_file(prepped_html, dest_path)
