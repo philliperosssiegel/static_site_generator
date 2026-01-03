@@ -13,6 +13,17 @@ class BlockType(Enum):
     OLIST = "ordered_list"
     ULIST = "unordered_list"
 
+def extract_title(markdown):
+    blocks = markdown_to_blocks(markdown)
+
+    for block_text in blocks:
+        block_type = block_to_block_type(block_text)
+        if block_type == BlockType.HEADING:
+            if get_heading_type(block_text) == 1:
+                return block_text.lstrip("#").lstrip(" ")
+
+    raise ValueError("Invalid markdown file, missing h1 header")
+
 def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
 
@@ -23,7 +34,6 @@ def markdown_to_html_node(markdown):
     return ParentNode(tag="div", children=html_nodes)
 
 def create_block_html_parent_node(block_text: str):
-
     block_type = block_to_block_type(block_text) 
 
     if block_type in [BlockType.PARAGRAPH, BlockType.HEADING, BlockType.QUOTE]:
