@@ -49,6 +49,9 @@ def copy_file_if_not_exists(source_dir: Path, source_filename: Path, destination
     else: 
         raise ValueError(f"Source file is not a file")
 
+def get_filetype(file_path: str) -> str:
+    return os.path.basename(file_path).split(".")[1]
+    
 def get_filename(source_path: Path) -> str:
     return os.path.basename(source_path)
 
