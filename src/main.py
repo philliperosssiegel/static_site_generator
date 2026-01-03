@@ -14,7 +14,7 @@ def main():
 
     recursive_directory_copy(source_path, target_path)
 
-    generate_pages_recursive(source_path, target_path, template_path)
+    # generate_pages_recursive(source_path, target_path, template_path)
     generate_pages_recursive(os.path.abspath("content"), target_path, template_path)
     # generate_page(os.path.join("content", "index.md"), os.path.join(target_path, "index.html"), generator_template)
     # generate_page(os.path.join("content/blog/glorfindel", "index.md"), os.path.join(target_path, "index.html"), generator_template)

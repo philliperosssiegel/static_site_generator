@@ -1,7 +1,7 @@
 import os
 
 from markdown_blocks import markdown_to_html_node, extract_title
-from copystatic import make_dir_if_not_exists, get_filetype
+from copystatic import make_dir_if_not_exists, get_filetype, get_filename
 
 
 def read_file(file_path: str) -> str:
@@ -36,7 +36,9 @@ def generate_pages_recursive(dir_path_content: str, dest_dir_path: str, template
         full_item_path = os.path.join(dir_path_content, item)
         if os.path.isfile(full_item_path):
             if get_filetype(full_item_path) == "md":
-                generate_page(full_item_path, os.path.join(dest_dir_path, item), template_path)
+                filename_no_ext = get_filename(item).split(".")[0]
+                new_filename = f"{filename_no_ext}.html"
+                generate_page(full_item_path, os.path.join(dest_dir_path, new_filename), template_path)
         else: #item is a directory
             print(f"item={full_item_path}")
             print(os.path.isfile(full_item_path))
